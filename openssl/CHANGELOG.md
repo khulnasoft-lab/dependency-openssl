@@ -2,40 +2,6 @@
 
 ## [Unreleased]
 
-## [v0.10.64] - 2024-02-19
-
-### Added
-
-* Added `PkeyCtxRef::{nonce_type, set_nonce_type}`.
-* Added `X509Ref::alias`.
-
-
-## [v0.10.63] - 2024-01-19
-
-### Added
-
-* Added `Pkcs7Ref::{type_,signed}`.
-* Added `Pkcs7SignedRef::certificates`.
-* Added `Cipher::{aes_256_xts,des_ede3_ecb,des_ede3_cfb8,des_ede3_ofb,camellia128_ofb,camellia192_ofb,camellia256_ofb,cast5_ofb,idea_ofb}`
-* Added `PKey::from_dhx`
-* Added `PKey::{public_key_from_pem_passphrase,public_key_from_pem_callback}`.
-
-### Changed
-
-* `Cipher::aes_128_ofb` is now available on BoringSSL
-* `Nid::{BRAINPOOL_P256R1,BRAINPOOL_P320R1,BRAINPOOL_P384R1,BRAINPOOL_P512R1}` are now available on LibreSSL.
-
-## [v0.10.62] - 2023-12-22
-
-### Added
-
-* Added `Nid::BRAINPOOL_P320R1`
-* Added `rand_priv_bytes`
-
-### Fixed
-
-* Fixed building on the latest version of BoringSSL
-
 ## [v0.10.61] - 2023-12-04
 
 ### Changed
@@ -892,10 +858,7 @@
 
 Look at the [release tags] for information about older releases.
 
-[Unreleased]: https://github.com/sfackler/rust-openssl/compare/openssl-v0.10.64...master
-[v0.10.64]: https://github.com/sfackler/rust-openssl/compare/openssl-v0.10.63...openssl-v0.10.64
-[v0.10.63]: https://github.com/sfackler/rust-openssl/compare/openssl-v0.10.62...openssl-v0.10.63
-[v0.10.62]: https://github.com/sfackler/rust-openssl/compare/openssl-v0.10.61...openssl-v0.10.62
+[Unreleased]: https://github.com/sfackler/rust-openssl/compare/openssl-v0.10.61...master
 [v0.10.61]: https://github.com/sfackler/rust-openssl/compare/openssl-v0.10.60...openssl-v0.10.61
 [v0.10.60]: https://github.com/sfackler/rust-openssl/compare/openssl-v0.10.59...openssl-v0.10.60
 [v0.10.59]: https://github.com/sfackler/rust-openssl/compare/openssl-v0.10.58...openssl-v0.10.59

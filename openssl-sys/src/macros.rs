@@ -58,7 +58,7 @@ macro_rules! cfg_if {
 macro_rules! stack {
     ($t:ident) => {
         cfg_if! {
-            if #[cfg(any(ossl110, libressl390))] {
+            if #[cfg(ossl110)] {
                 pub enum $t {}
             } else {
                 #[repr(C)]
