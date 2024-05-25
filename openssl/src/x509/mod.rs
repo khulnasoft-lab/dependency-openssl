@@ -41,7 +41,7 @@ use crate::util::{ForeignTypeExt, ForeignTypeRefExt};
 use crate::{cvt, cvt_n, cvt_p, cvt_p_const};
 use openssl_macros::corresponds;
 
-#[cfg(any(ossl102, boringssl, libressl261))]
+#[cfg(any(ossl102, libressl261))]
 pub mod verify;
 
 pub mod extension;
@@ -480,7 +480,7 @@ impl X509Ref {
 
     /// Retrieves the path length extension from a certificate, if it exists.
     #[corresponds(X509_get_pathlen)]
-    #[cfg(any(ossl110, boringssl))]
+    #[cfg(ossl110)]
     pub fn pathlen(&self) -> Option<u32> {
         let v = unsafe { ffi::X509_get_pathlen(self.as_ptr()) };
         u32::try_from(v).ok()
@@ -488,7 +488,7 @@ impl X509Ref {
 
     /// Returns this certificate's subject key id, if it exists.
     #[corresponds(X509_get0_subject_key_id)]
-    #[cfg(any(ossl110, boringssl))]
+    #[cfg(ossl110)]
     pub fn subject_key_id(&self) -> Option<&Asn1OctetStringRef> {
         unsafe {
             let data = ffi::X509_get0_subject_key_id(self.as_ptr());
@@ -498,7 +498,7 @@ impl X509Ref {
 
     /// Returns this certificate's authority key id, if it exists.
     #[corresponds(X509_get0_authority_key_id)]
-    #[cfg(any(ossl110, boringssl))]
+    #[cfg(ossl110)]
     pub fn authority_key_id(&self) -> Option<&Asn1OctetStringRef> {
         unsafe {
             let data = ffi::X509_get0_authority_key_id(self.as_ptr());
@@ -649,24 +649,6 @@ impl X509Ref {
         }
     }
 
-    /// Returns this certificate's "alias". This field is populated by
-    /// OpenSSL in some situations -- specifically OpenSSL will store a
-    /// PKCS#12 `friendlyName` in this field. This is not a part of the X.509
-    /// certificate itself, OpenSSL merely attaches it to this structure in
-    /// memory.
-    #[corresponds(X509_alias_get0)]
-    pub fn alias(&self) -> Option<&[u8]> {
-        unsafe {
-            let mut len = 0;
-            let ptr = ffi::X509_alias_get0(self.as_ptr(), &mut len);
-            if ptr.is_null() {
-                None
-            } else {
-                Some(slice::from_raw_parts(ptr, len as usize))
-            }
-        }
-    }
-
     to_pem! {
         /// Serializes the certificate into a PEM-encoded X509 structure.
         ///
@@ -774,13 +756,12 @@ impl X509 {
                     ffi::PEM_read_bio_X509(bio.as_ptr(), ptr::null_mut(), None, ptr::null_mut());
                 if r.is_null() {
                     let e = ErrorStack::get();
-
-                    if let Some(err) = e.errors().last() {
-                        if err.library_code() == ffi::ERR_LIB_PEM as libc::c_int
-                            && err.reason_code() == ffi::PEM_R_NO_START_LINE as libc::c_int
-                        {
-                            break;
-                        }
+                    let errors = e.errors();
+                    if !errors.is_empty()
+                        && errors[0].library_code() == ffi::ERR_LIB_PEM as libc::c_int
+                        && errors[0].reason_code() == ffi::PEM_R_NO_START_LINE as libc::c_int
+                    {
+                        break;
                     }
 
                     return Err(e);
@@ -2112,7 +2093,10 @@ impl GeneralName {
         }
     }
 
-    pub(crate) fn new_other_name(oid: Asn1Object, value: &[u8]) -> Result<GeneralName, ErrorStack> {
+    pub(crate) fn new_other_name(
+        oid: Asn1Object,
+        value: &Vec<u8>,
+    ) -> Result<GeneralName, ErrorStack> {
         unsafe {
             ffi::init();
 
