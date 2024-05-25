@@ -3,8 +3,6 @@ use libc::*;
 cfg_if! {
     if #[cfg(ossl110)] {
         pub enum OPENSSL_STACK {}
-    } else if #[cfg(libressl390)] {
-        pub enum _STACK {}
     } else {
         #[repr(C)]
         pub struct _STACK {

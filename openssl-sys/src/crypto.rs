@@ -57,7 +57,7 @@ pub type CRYPTO_EX_free = unsafe extern "C" fn(
     argp: *mut c_void,
 );
 
-#[cfg(any(ossl110, libressl390))]
+#[cfg(ossl110)]
 #[inline]
 #[track_caller]
 pub unsafe fn OPENSSL_malloc(num: usize) -> *mut c_void {
@@ -68,7 +68,7 @@ pub unsafe fn OPENSSL_malloc(num: usize) -> *mut c_void {
     )
 }
 
-#[cfg(not(any(ossl110, libressl390)))]
+#[cfg(not(ossl110))]
 #[inline]
 #[track_caller]
 pub unsafe fn OPENSSL_malloc(num: c_int) -> *mut c_void {
@@ -79,7 +79,7 @@ pub unsafe fn OPENSSL_malloc(num: c_int) -> *mut c_void {
     )
 }
 
-#[cfg(any(ossl110, libressl390))]
+#[cfg(ossl110)]
 #[inline]
 #[track_caller]
 pub unsafe fn OPENSSL_free(addr: *mut c_void) {
@@ -90,7 +90,7 @@ pub unsafe fn OPENSSL_free(addr: *mut c_void) {
     )
 }
 
-#[cfg(not(any(ossl110, libressl390)))]
+#[cfg(not(ossl110))]
 #[inline]
 pub unsafe fn OPENSSL_free(addr: *mut c_void) {
     CRYPTO_free(addr)

@@ -1,16 +1,10 @@
 use super::super::*;
 use libc::*;
 
-cfg_if! {
-    if #[cfg(libressl400)] {
-        pub enum X509_VAL {}
-    } else {
-        #[repr(C)]
-        pub struct X509_VAL {
-            pub notBefore: *mut ASN1_TIME,
-            pub notAfter: *mut ASN1_TIME,
-        }
-    }
+#[repr(C)]
+pub struct X509_VAL {
+    pub notBefore: *mut ASN1_TIME,
+    pub notAfter: *mut ASN1_TIME,
 }
 
 pub enum X509_NAME_ENTRY {}
@@ -317,7 +311,6 @@ extern "C" {
     pub fn X509_get_version(x: *const X509) -> c_long;
     pub fn X509_set_serialNumber(x: *mut X509, sn: *mut ASN1_INTEGER) -> c_int;
     pub fn X509_get_serialNumber(x: *mut X509) -> *mut ASN1_INTEGER;
-    pub fn X509_alias_get0(x: *mut X509, len: *mut c_int) -> *mut c_uchar;
 }
 const_ptr_api! {
     extern "C" {
@@ -694,22 +687,16 @@ extern "C" {
     pub fn X509_REQ_print(bio: *mut BIO, req: *mut X509_REQ) -> c_int;
 }
 
-cfg_if! {
-    if #[cfg(libressl390)] {
-        pub enum X509_PURPOSE {}
-    } else {
-        #[repr(C)]
-        pub struct X509_PURPOSE {
-            pub purpose: c_int,
-            pub trust: c_int, // Default trust ID
-            pub flags: c_int,
-            pub check_purpose:
-                Option<unsafe extern "C" fn(*const X509_PURPOSE, *const X509, c_int) -> c_int>,
-            pub name: *mut c_char,
-            pub sname: *mut c_char,
-            pub usr_data: *mut c_void,
-        }
-    }
+#[repr(C)]
+pub struct X509_PURPOSE {
+    pub purpose: c_int,
+    pub trust: c_int, // Default trust ID
+    pub flags: c_int,
+    pub check_purpose:
+        Option<unsafe extern "C" fn(*const X509_PURPOSE, *const X509, c_int) -> c_int>,
+    pub name: *mut c_char,
+    pub sname: *mut c_char,
+    pub usr_data: *mut c_void,
 }
 
 const_ptr_api! {
